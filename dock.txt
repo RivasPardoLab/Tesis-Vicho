@@ -1,0 +1,37 @@
+<ROSETTASCRIPTS>
+
+	<SCOREFXNS>
+        <ScoreFunction name="ligand_soft_rep" weights="ligand_soft_rep"> # pointing to appropriate weights file in the database
+            <Reweight scoretype="fa_elec" weight="0.42"/>
+            <Reweight scoretype="hbond_bb_sc" weight="1.3"/>
+            <Reweight scoretype="hbond_sc" weight="1.3"/>
+            <Reweight scoretype="rama" weight="0.2"/>
+        </ScoreFunction>
+    
+       
+	</SCOREFXNS>
+	<LIGAND_AREAS>			
+	</LIGAND_AREAS>
+	<INTERFACE_BUILDERS>
+	</INTERFACE_BUILDERS>
+	<MOVEMAP_BUILDERS>
+	</MOVEMAP_BUILDERS>
+	<SCORINGGRIDS ligand_chain="X" width="45.0">
+	</SCORINGGRIDS>
+
+	<MOVERS>
+		<StartFrom name="start_from" chain="X"> # we need to move the ligand into the pocket
+            			<PDB filename="%%startfrom%%" /> # corresponds to "-parser:script_vars" flags given in flags.txt
+        	</StartFrom>
+		<Transform name="transform" chain="X" box_size="10.0" move_distance="0.1" angle="5.0" cycles="500" repeats="1" temperature="5" initial_perturb="1.0" /># initial transform step for low-resolution sampling.This box size can also be edited according to dimensions that you're looking at.
+		<InterfaceScoreCalculator name="add_scores" chains="X" scorefxn="ligand_soft_rep"  native="crystal_complex.pdb"/> # calculates the scores for the interface region only.  
+	</MOVERS>
+
+
+	<PROTOCOLS>
+		<Add mover_name="start_from"/>
+            	<Add mover_name="transform"/>
+		<Add mover_name="add_scores"/>
+	</PROTOCOLS>
+
+</ROSETTASCRIPTS>
